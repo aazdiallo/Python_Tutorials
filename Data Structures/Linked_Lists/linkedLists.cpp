@@ -1,11 +1,12 @@
 #include <iostream>
-
+#include <stack>
+#include <queue>
 // Using linked lists
 template <typename T>
 class Node
 {
 public:
-  Node (T value) // copy constructor of the node
+  Node (T value) // default constructor of the node
   : data_ (value), nextNode_(NULL) // initializing Node objects
   {}
     void setData(T Data_value) { data_ = Data_value; }
@@ -19,6 +20,228 @@ private:
   T data_;
   Node<T> * nextNode_;
 };
+
+// BST
+template <typename T>
+class BSTNode
+{
+public:
+  BSTNode (T value) // constructor with parameters
+  : data_ (value), left_(NULL), right_(NULL) // initializing Node objects
+  {}
+    /// setting up and retrieving data_
+    void setData(T Data_value) { data_ = Data_value; }
+    T getData() const { return data_; } // getter method for data_
+
+    /// setting up and retrieving left_ and right_ pointers
+    BSTNode<T>* getLeft() const { return left_; }
+    void setLeft(BSTNode<T>* Lnode) { left_ = Lnode; }
+
+    BSTNode<T>* getRight() const { return right_; }
+    void setRight(BSTNode<T>* Rnode) { right_ = Rnode; }
+
+  BSTNode () // default constructor without parameters
+  : left_(NULL), right_(NULL) // initializing Node objects
+  {}
+
+// variable definition
+private:
+  T data_;
+  BSTNode<T> * left_;
+  BSTNode<T> * right_;
+};
+
+template <typename T>
+class ListBST
+{
+public:
+  ListBST () // default constructor without parameters
+  {}
+    /// setting up root pointer
+    BSTNode<T>* getRoot() const { return root_; }
+    void setRoot(BSTNode<T>* root) { root_ = root; }
+
+    /// create a new BST element
+    BSTNode<T>* createBST(T data)
+    {
+      BSTNode<T>* newBST = new BSTNode<T>(data);
+      return newBST; // return newly created node
+    }
+
+    /// Inserting a BSTNode into a BST Tree
+    BSTNode<T>* insertBST (T data, BSTNode<T>* var = root_)
+    {
+      // testing if the BST is empty
+      if (root_ == NULL)
+        setRoot(createBST(data)); // set root to newly created element
+
+      if (var == NULL) /// create a new BST and attach it to correct leaf
+        var = createBST(data);
+      // if the BST is not empty
+      else
+      { /// if data is less than or equal to root_'s data
+        if (data <= var->getData())
+          var->setLeft(insertBST(data, var->getLeft()));
+
+        else /// if data is greater than to root_'s data
+          var->setRight(insertBST(data, var->getRight()));
+      }
+    return var;
+    }
+
+    /// search function
+    T search(T value, BSTNode<T>* root = root_)
+    {
+      if (root == NULL)
+          return 0;
+      else
+      {
+        if (value == root->getData())
+          return root->getData();
+
+        else if (value < root->getData())
+          return search(value, root->getLeft());
+
+        else if (value > root->getData())
+          return search(value, root->getRight());
+      }
+      return 0;
+    }
+
+    /// find min value in a BST
+    T findMin(BSTNode<T>* root = root_) /// pass root_ pointer to the method
+    {
+      if (root == NULL) // exit when BST is empty
+        return 0;
+
+      else
+      { /// get left most value of BST
+        if (root->getLeft() != NULL) // Loop until last element of the BST
+          return findMin(root->getLeft());
+
+        else // return last left most BST element
+          return root->getData();
+      }
+      return 0;
+    }
+
+    /// find max value in a BST
+    T findMax(BSTNode<T>* root = root_) /// pass root_ pointer to the method
+    {
+      if (root == NULL) // exit when BST is empty
+        return 0;
+
+      else
+      { /// get right most value of BST
+        if (root->getRight() != NULL) // Loop until last element of the BST
+          return findMax(root->getRight());
+
+        else // return last right most BST element
+          return root->getData();
+      }
+      return 0;
+    }
+
+    // getting height of a Tree
+    int findHeight(BSTNode<T>* root = root_)
+    {
+      int Lheight = 0, Rheight = 0;
+      if (root == NULL)
+        return -1;
+
+      else
+      {
+        Lheight += findHeight(root->getLeft());
+        Rheight += findHeight(root->getRight());
+      }
+
+      if (Lheight > Rheight)
+        return Lheight + 1;
+
+      else
+        return Rheight + 1;
+    }
+
+    ///// The three depth first tree traversals "pre, in, and post order"
+    // Preorder BST traversal <root, left, right>
+    void Preorder (BSTNode<T>* root = root_)
+    {
+      if (root == NULL)
+        return;
+
+      else
+      {
+        std::cout << root->getData() << ' ';
+        Preorder(root->getLeft());
+        Preorder(root->getRight());
+      }
+    }
+
+    // Inorder BST traversal <root, left, right>
+    void Inorder (BSTNode<T>* root = root_)
+    {
+      if (root == NULL)
+        return;
+
+      else
+      {
+        Inorder(root->getLeft());
+        std::cout << root->getData() << ' ';
+        Inorder(root->getRight());
+      }
+    }
+
+    // Postorder BST traversal <root, left, right>
+    void Postorder (BSTNode<T>* root = root_)
+    {
+      if (root == NULL)
+        return;
+
+      else
+      {
+        Postorder(root->getLeft());
+        Postorder(root->getRight());
+        std::cout << root->getData() << ' ';
+      }
+    }
+
+    // breath first tree traversal (Level order traversal)
+    // Level order traversal
+    void level_order (BSTNode<T>* root = root_)
+    {
+      if (root == NULL) // if BST pointer is empty then exit
+        return;
+
+      else
+      {
+        std::queue<BSTNode<T>*> BSTQ;
+        BSTQ.push(root);
+        while (!BSTQ.empty())
+        {
+          // std::cout << BSTQ.front()->getData() << ' '; // could b here too
+          if(BSTQ.front()->getLeft() != NULL)
+            BSTQ.push(BSTQ.front()->getLeft());
+
+          if(BSTQ.front()->getRight() != NULL)
+            BSTQ.push(BSTQ.front()->getRight());
+
+          std::cout << BSTQ.front()->getData() << ' ';
+          BSTQ.pop();
+        }
+      }
+    }
+
+    // Verify that a Tree is a BST
+    bool isBST (BSTNode<T>* root = root_, T min = INT_MIN, T max = INT_MAX)
+    {
+      return false;
+    }
+
+private:
+  static BSTNode<T>* root_;
+};
+template <typename T>
+BSTNode<T>* ListBST<T>:: root_ = NULL;
 
 template <typename T>
 std::ostream & operator<< (std::ostream & ostream, const Node<T>& node)
@@ -210,7 +433,7 @@ public:
           }while (temp->getNext() != NULL);
         }
         else
-          std::cout << "impossible";
+          std::cout << "List has only one element!\n";
       }
     }
 
@@ -249,13 +472,13 @@ public:
       // if the pointer hasn't reached the end of the list
       else if (ptr != NULL)
       {
-        if (ptr->->getNext() == NULL)
+        if (ptr->getNext() == NULL)
         {
           phead_ = ptr; // set lastNode as head of the list
           return; // exit recursion
         }
         revPrint(ptr->getNext());
-        Node<T>* p = ptr->getNext(); // save the address of the lastNode
+        Node<T>* q = ptr->getNext(); // save the address of the lastNode
         q->setNext(ptr); // make lastNode point to the one right before
         ptr->setNext(NULL); // set the current node pointer to NULL
         //std::cout << ptr->getData() << ' ';
@@ -291,65 +514,132 @@ std::ostream & operator<< (std::ostream & ostream, const LinkedList<T>& list)
   return ostream;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+/////////////// Using stacks for Pre and Post fix evaluation /////////////////
+//////////////////////////////////////////////////////////////////////////////
+// void evaluatePost(std::string strExpression, std::char [] operators)
+// {
+//   for (int i = 0; i < strExpression.length(); ++i)
+//   {
+//
+//   }
+// }
+
+// void postFixNotation(std::string expression)
+// {
+//   std::string operatorsList = "-+*/";
+//   std::stack<int> postFix;
+//   std::stack<char> operators;
+//   for (int i = 0; i < expression.length(); ++i)
+//   {
+//     for (int j = 0; j < operatorsList.length(); ++j)
+//     {
+//       if (expression[i] != operatorsList[j]) // if element is not an operator
+//         postFix.push(expression[i]);
+//
+//       else
+//       {
+//         operators.push(expression[i]);
+//         // if (!operators.empty()) // if the stack is not empty
+//         // {
+//         //   if ((operators.pop() == '-' || operators.pop() == '+') &&
+//         //       (operators[i] == '*' || operators[i] == '/'))
+//         //   {
+//         //
+//         //   }
+//         // }
+//       }
+//     }
+//   }
+//   for (int i = 0; i < operators.size(); ++i)
+//     std::cout << operators[i];
+//
+//   for (int i = 0; i < postFix.size(); ++i)
+//     std::cout << postFix[i];
+//}
 int main(int argc, char const *argv[]) {
   /* code */
-  std::cout << "*********** Use of Link Lists ************\n";
-  Node <int> first(5);
-  Node <int> second(7);
-  //std::cout << first;
-  LinkedList <int> third;
-  third.AddList(8);
-  third.AddList(38);
-  third.AddList(12);
-  third.AddList(73);
-  third.AddList(98);
-  third.AddList(54);
-  third.AddList(17);
-  std::cout << third;
-  third.sortLink();
-  std::cout << "\n============ Sorted list =============\n" << third;
-  std::cout << "\nList printed in reverse order: ";
-  third.revPrint();
 
-  // LinkedList <char> fourth;
-  // Node <char> fifth('A');
-  // Node <char> six('B');
-  // Node <char> sev('H');
-  // Node <char> eight('J');
-
-  LinkedList <float> fourth;
-  Node <float> fifth(7.85);
-  Node <float> six(45.12);
-  Node <float> sev(3.25);
-  Node <float> eight(4.1);
-  Node <float> f(38.25);
-  Node <float> g(84.1);
-
-  fourth.inserHead(fifth);
-  fourth.inserHead(six);
-  fourth.inserTail(eight);
-  fourth.inserTail(sev);
-  fourth.inserTail(f);
-  fourth.inserTail(g);
-  std::cout << "\nInserting a Node: " << third;
-
-  third.reversedList();
-  std::cout << "\nReversed List: " << third;
-
-  LinkedList <int> test;
-  test.AddList(8);
-  test.AddList(38);
-  //test.AddList(12);
-  std::cout << test;
-  test.reversedList();
-  std::cout << "\nReversed List: " << test;
-  // fourth.reverseList();
-  // std::cout << "Here: ";
-  // std::cout << fourth;
+  /// BST usages
+  ListBST<int> myBST;
+  myBST.insertBST(15);   //               15
+  myBST.insertBST(10);   //           10      20
+  myBST.insertBST(20);   //         8   12  18   25
+  myBST.insertBST(18);   //       5            22   35
+  myBST.insertBST(25);   //                  21  23
+  myBST.insertBST(8);    //
+  myBST.insertBST(5);
+  myBST.insertBST(22);
+  myBST.insertBST(21);
+  myBST.insertBST(23);
+  myBST.insertBST(12);
+  myBST.insertBST(35);
+  std::cout<< "Search: " << myBST.search(12) << '\n';
+  std::cout << "Min: " << myBST.findMin() << '\n';
+  std::cout << "Max: " << myBST.findMax() << '\n';
+  std::cout << "Height: " << myBST.findHeight() << '\n';
+  std::cout << "Pre-Order: "; myBST.Preorder(); std::cout << '\n';
+  std::cout << "In-Order: "; myBST.Inorder(); std::cout << '\n';
+  std::cout << "Post-Order: "; myBST.Postorder(); std::cout << '\n';
+  std::cout << "Level-Order: "; myBST.level_order(); std::cout << '\n';
+  std::cout << "Is BST: "; if (myBST.isBST()) std::cout << "Yes!\n"; 
+                            else std::cout << "Nope! \n";
+  // std::string strExpression;
+  // //char strExpression [20];
+  // std::cout << "========== Prefix Notation ==========\n";
+  // std::cout << "Enter your expression here: ";
   //
-  // fourth.sortLink();
-  // std::cout << "\n============ Sorted list =============\n";
-  // std::cout << fourth;
+  // std::cin>> strExpression; // getting elements of the expression
+  // std::cout << strExpression;
+  // for (int i = 0; i < strExpression.length(); ++i)
+  // {
+  //   std::cout << strExpression[i] << ' ';
+  // }
+  // std::cout << std::endl;
+  // std::cout << "*********** Use of Link Lists ************\n";
+  // Node <int> first(5);
+  // Node <int> second(7);
+  // //std::cout << first;
+  // LinkedList <int> third;
+  // third.AddList(8);
+  // third.AddList(38);
+  // third.AddList(12);
+  // third.AddList(73);
+  // third.AddList(98);
+  // third.AddList(54);
+  // third.AddList(17);
+  // std::cout << third;
+  // third.sortLink();
+  // std::cout << "\n============ Sorted list =============\n" << third;
+  // std::cout << "\nList printed in reverse order: ";
+  // third.revPrint();
+  // third.RevList();
+  // std::cout << "\nList reversed using recursion: " << third;
+  //
+  // // LinkedList <char> fourth;
+  // // Node <char> fifth('A');
+  // // Node <char> six('B');
+  // // Node <char> sev('H');
+  // // Node <char> eight('J');
+  //
+  // LinkedList <float> fourth;
+  // Node <float> fifth(7.85);
+  // Node <float> six(45.12);
+  // Node <float> sev(3.25);
+  // Node <float> eight(4.1);
+  // Node <float> f(38.25);
+  // Node <float> g(84.1);
+  //
+  // fourth.inserHead(fifth);
+  // fourth.inserHead(six);
+  // fourth.inserTail(eight);
+  // fourth.inserTail(sev);
+  // fourth.inserTail(f);
+  // fourth.inserTail(g);
+  // std::cout << "\nInserting a Node: " << fourth;
+  //
+  // fourth.RevList();
+  // std::cout << "\nList reversed using recursion: " << fourth;
 
   return 0;
 }
