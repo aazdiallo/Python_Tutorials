@@ -11,12 +11,12 @@
 // }
 
 // print stack
-void printStack(std::stack<int>& stacks)
+void printStack(std::stack<int>* stacks)
 {
-  std::cout << "sizes: " << stacks.size() << '\n';
-  while (!stacks.empty()) {
-    std::cout << stacks.top() << ' ';
-    stacks.pop();
+  std::cout << "sizes: " << stacks->size() << '\n';
+  while (!stacks->empty()) {
+    std::cout << stacks->top() << ' ';
+    stacks->pop();
   }
   std::cout << '\n';
 }
@@ -92,7 +92,8 @@ int calculator ()
 
 void to_binary(std::stack<int>& stack, int number)
 {
-  std::cout << "Number: " << number << '\n';
+  //std::cout << "Number: " << number << '\n';
+  //std::cout << "sizes: " << stack.size() << '\n';
   while (number > 0)
   {
     int remainder = number % 2;
@@ -102,7 +103,7 @@ void to_binary(std::stack<int>& stack, int number)
 }
 
 // Converts whole numbers into different bases
-void converter_function (std::stack<int>& mystack, std::stack<int>& tempStack, int base, int type = 0)
+void converter_function (std::stack<int>& mystack, int base, int type = 0)
 {
   int number, initial_number;
   std::cout << "Enter the number to convert: ";
@@ -314,13 +315,13 @@ void converter_function (std::stack<int>& mystack, std::stack<int>& tempStack, i
 
             // when a valid octal number is entered
             // loop through all the octal digits
+            std::stack<int> tempStack;
             for (int i = 0; i < octalNumber.length(); ++i)
             {
-              std::cout << "octalNumber.Length(): " << octalNumber.length() << '\n';
               // call to_binary() function
-              to_binary(tempStack, octalNumber[i]);
+              to_binary(tempStack, std::stoi(std::to_string(octalNumber[i])));
               // render the octalNumber into three binary digits
-              std::cout << "octalStack.size(): " << tempStack.size();
+              std::cout << "tempStack.size(): " << tempStack.size() << ' ';
               if (tempStack.size() < 2)
               { // when stack contains only one digit
                 mystack.push(0);
@@ -335,7 +336,6 @@ void converter_function (std::stack<int>& mystack, std::stack<int>& tempStack, i
                 int snd = tempStack.top(); tempStack.pop();
                 mystack.push(snd);
                 mystack.push(last);
-                std::cout << "Here: ";
               }
               else
               {
@@ -345,10 +345,8 @@ void converter_function (std::stack<int>& mystack, std::stack<int>& tempStack, i
                 mystack.push(fst);
                 mystack.push(snd);
                 mystack.push(lst);
-                std::cout << "Here: ";
               }
             }
-            std::cout << "Here: ";
             mystack.push(initial_number);
           }break;
 
@@ -356,70 +354,70 @@ void converter_function (std::stack<int>& mystack, std::stack<int>& tempStack, i
 
 }
 // Converter function
-void general_converter(std::stack<int>& mystack, std::stack<int>& tempStack, int choice)
+void general_converter(std::stack<int>& mystack, int choice)
 {
   switch (choice)
   {
     case 1: // Decimal to Binary conversion
     {
       std::cout << "Decimal To Binary Conversion!!!\n";
-      converter_function(mystack, tempStack, 2);
+      converter_function(mystack, 2);
     }
     break;
 
     case 2: // Decimal to Octal conversion
     {
       std::cout << "Decimal To Octal Conversion!!!\n";
-      converter_function(mystack, tempStack, 8);
+      converter_function(mystack, 8);
     }
     break;
 
     case 3: // Decimal to Hexadecimal conversion
     {
       std::cout << "Decimal To Hexadecimal Conversion!!!\n";
-      converter_function(mystack, tempStack, 16);
+      converter_function(mystack, 16);
     }
     break;
 
     case 4: // Binary To Decimal Conversion
     {
       std::cout << "Binary To Decimal Conversion!!!\n";
-      converter_function(mystack, tempStack, 2, 1);
+      converter_function(mystack, 2, 1);
     }
     break;
 
     case 5: // Binary To Octal Conversion
     {
       std::cout << "Binary To Octal Conversion!!!\n";
-      converter_function(mystack, tempStack, 2, 2);
+      converter_function(mystack, 2, 2);
     }
     break;
 
     case 6: // Binary To Hexadecimal Conversion
     {
       std::cout << "Binary To Hexadecimal Conversion!!!\n";
-      converter_function(mystack, tempStack, 2, 3);
+      converter_function(mystack, 2, 3);
     }
     break;
 
     case 7: // Binary To Hexadecimal Conversion
     {
       std::cout << "Octal To Binary Conversion!!!\n";
-      converter_function(mystack, tempStack, 2, 4);
+      converter_function(mystack, 2, 4);
     }
     break;
 
     case 8: // Binary To Hexadecimal Conversion
     {
       std::cout << "Octal To Decimal Conversion!!!\n";
-      converter_function(mystack, tempStack, 2, 3);
+      converter_function(mystack, 2, 3);
     }
     break;
 
     case 9: // Binary To Hexadecimal Conversion
     {
       std::cout << "Octal To Hexadecimal Conversion!!!\n";
-      converter_function(mystack, tempStack, 2, 3);
+      converter_function(mystack, 2, 3);
     }
     break;
   }
@@ -428,21 +426,13 @@ void general_converter(std::stack<int>& mystack, std::stack<int>& tempStack, int
 
 
 int main(int argc, char const *argv[]) {
-  std::stack<int>finalStack, tempStack;
-  // std::stack<int>* stackPtr;
-  // stackPtr = &finalStack;
-  finalStack.push(1);
-  finalStack.push(2);
-  finalStack.push(3);
-  finalStack.push(4);
-  finalStack.push(5);
-  finalStack.push(6);
+  std::stack<int>finalStack;
   //std::cout << "Size: " << finalStack.size() << '\n';
-   //printStack(finalStack);
+   //printStack(stackPtr);
   // reverseStack(finalStack);
   // printStack(finalStack);
 
-  general_converter(finalStack, tempStack, calculator());
+  general_converter(finalStack, calculator());
   //printStack(finalStack);
   //std::cout << finalStack.top() << " = "; // Last stack element is the user's input
   //finalStack.pop(); // delete last element because that's the converted number
