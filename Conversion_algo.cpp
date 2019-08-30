@@ -11,12 +11,36 @@
 // }
 
 // print stack
-void printStack(std::stack<int>* stacks)
+void printStack(std::stack<int>& stacks)
 {
-  std::cout << "sizes: " << stacks->size() << '\n';
-  while (!stacks->empty()) {
-    std::cout << stacks->top() << ' ';
-    stacks->pop();
+  int places = 0;
+  int remainder = stacks.size() % 4;
+  bool digit_place = false;
+  if (remainder != 0) 
+    digit_place = true;
+
+  while (!stacks.empty())
+  {
+    if (remainder == 0 && digit_place)
+    {
+      std::cout << ' ';
+      digit_place = false;
+    }
+    else
+    {
+      if (places > 3)
+      {
+        std::cout << ' ';
+        places = 0; // reset places
+      }
+    }
+    std::cout << stacks.top();
+    stacks.pop();
+    if (remainder == 0)
+      ++places;
+
+    else if (remainder > 0)
+      --remainder; // decrease only if remainder doesn't equal to 0 already
   }
   std::cout << '\n';
 }
@@ -282,60 +306,57 @@ void converter_function (std::stack<int>& mystack, int base, int type = 0)
           {
             // Converts the binary number into an array of digits
             std::string octalNumber = std::to_string(number);
-            std::string octalValues = "01234567";
             int i = 0; //iterator that iterates through the array of digits
-            bool validOctal = false;
             bool isOctal = false;
             while(isOctal == false) // If entered number is a valid octal
             {
+              int res = 0;
               for (int i = 0; i < octalNumber.length(); ++i)
               { // Verify that the entered number is a valid octal
-                for (int j = 0; j < octalValues.length(); ++j)
+                res = res * 10 + octalNumber[i] - '0';
+                std::cout << res << ' ';
+                if (res >= 0 && res < 8)
                 {
-                  if (octalNumber[i] == octalValues[j])
-                  {
-                    validOctal = true;
-                    break;
-                  }
-                  else
-                    validOctal = false;
+                  isOctal = true;
+                  res = 0; // reset res
                 }
-
-                if (validOctal == false)
+                else
                 {
                   std::cout << "Please enter an octal number: ";
                   std::cin >> number;
                   octalNumber = std::to_string(number);
                   isOctal = false;
                 }
-                else
-                  isOctal = true;
               }
             }
 
             // when a valid octal number is entered
             // loop through all the octal digits
             std::stack<int> tempStack;
-            for (int i = 0; i < octalNumber.length(); ++i)
+            for (int i = octalNumber.length() -1; i >= 0 ; --i)
             {
+              // Char to int (std::stoi(std::to_string(octalNumber[i])))
+              int res = 0;
+              res = res * 10 + octalNumber[i] - '0';
               // call to_binary() function
-              to_binary(tempStack, std::stoi(std::to_string(octalNumber[i])));
+              to_binary(tempStack, res);
               // render the octalNumber into three binary digits
-              std::cout << "tempStack.size(): " << tempStack.size() << ' ';
-              if (tempStack.size() < 2)
+              if (tempStack.size() == 1)
               { // when stack contains only one digit
-                mystack.push(0);
-                mystack.push(0);
+                std::cout << "one element: \n";
                 mystack.push(tempStack.top());
                 tempStack.pop(); // empty stack
-              }
-              else if (tempStack.size() < 3) // when stack contains only two digit
-              {
                 mystack.push(0);
-                int last = tempStack.top(); tempStack.pop();
+                mystack.push(0);
+              }
+              else if (tempStack.size() == 2) // when stack contains only two digit
+              {
+                int lst = tempStack.top(); tempStack.pop();
                 int snd = tempStack.top(); tempStack.pop();
                 mystack.push(snd);
-                mystack.push(last);
+                mystack.push(lst);
+                mystack.push(0);
+
               }
               else
               {
@@ -431,9 +452,10 @@ int main(int argc, char const *argv[]) {
    //printStack(stackPtr);
   // reverseStack(finalStack);
   // printStack(finalStack);
-
   general_converter(finalStack, calculator());
-  //printStack(finalStack);
+  std::cout << finalStack.top() << " = ";
+  finalStack.pop();
+  printStack(finalStack);
   //std::cout << finalStack.top() << " = "; // Last stack element is the user's input
   //finalStack.pop(); // delete last element because that's the converted number
 
