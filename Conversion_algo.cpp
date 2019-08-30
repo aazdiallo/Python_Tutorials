@@ -16,7 +16,7 @@ void printStack(std::stack<int>& stacks)
   int places = 0;
   int remainder = stacks.size() % 4;
   bool digit_place = false;
-  if (remainder != 0) 
+  if (remainder != 0)
     digit_place = true;
 
   while (!stacks.empty())
