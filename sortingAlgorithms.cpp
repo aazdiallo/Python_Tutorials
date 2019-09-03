@@ -72,37 +72,81 @@ void insertion_sort_arr(int arr[], int size)
   }
 }
 
+// merging two sorted arrays in increasing order
+void merge(int arr[], int arr_size, int L_arr[], int sizeL, int R_arr[], int sizeR)
+{
+  int iterate = 0, l = 0, r = 0;
+  while (iterate < arr_size) // while
+  {
+    if (l < sizeL && r < sizeR) // when neither one of the subarrays is
+    {                           // is completely looped through
+      if (L_arr[l] < R_arr[r])
+      {
+        arr[iterate] = L_arr[l];
+        ++l; // increment Left array index
+      }
+      else
+      {
+        arr[iterate] = R_arr[r];
+        ++r;
+      }
+    }
+    else if (l >= sizeL) // when L_arr[] is completely looped through
+    {
+      arr[iterate] = R_arr[r];
+      ++r;
+    }
+    else // when R_arr[] is completely looped through
+    {
+      arr[iterate] = L_arr[l];
+      ++l;
+    }
+
+    ++iterate; // increment final array's index
+  }
+}
 void merge_sort_arr(int arr[], int size)
 {
   if (size < 2)
     return;
 
   int half = size / 2;
-  int *left = new int[half];
-  if (size % 2 == 0)
-    int right[half];
+  int left[half];
+  int right[size - half];
 
-  else
-    int right[half+1];
-
-  for (int i = 0; i < half; ++i)
+  for (int i = 0; i < half; ++i) // fill in left subarray
     left[i] = arr[i];
 
-  for (int i = half; i < size; ++i)
+  for (int i = half; i < size; ++i) // fill in right subarray
     right[i] = arr[i];
 
+  merge_sort_arr(left, half);
+  merge_sort_arr(right, size - half);
+  merge(arr, size, left, half, right, (size - half));
+
+  return;
 }
 
 int main(int argc, char const *argv[]) {
   int size = 10;
   int arr[10];
-  fill_arr(arr, size);
+  int A[] = {-2, -4, 12, 0, 5, 11, -9, 32, 8};
+  merge_sort_arr(A, 9);
+  std::cout << "Merge is done!" << '\n';
+  for (int i = 0; i < 9; ++i)
+    std::cout << A[i] << ' ';
+
+  int a[4] = {-12, 4, 6, 18}, b[6] = {-5, 1, 3, 5, 7, 11};
+  merge(arr, 10, a, 4, b, 6);
+  //fill_arr(arr, size);
   //selection_sort_arr(arr, size);
   //bubble_sort_arr(arr, size);
-  insertion_sort_arr(arr, size);
+  //insertion_sort_arr(arr, size);
+
   std::cout << '\n';
   for (int i = 0; i < size; ++i)
-  std::cout << arr[i] << ' ';
+    std::cout << arr[i] << ' ';
 
+  std::cout << '\n';
   return 0;
 }
