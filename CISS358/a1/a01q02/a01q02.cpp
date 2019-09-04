@@ -5,88 +5,87 @@ void print_array(std::vector<int>& v)
 {
   for (int i = 0; i < v.size(); ++i)
     std::cout << v[i] << ' ';
-  std::cout << '\n';
 
+  std::cout << '\n';
   return;
 }
 
 std::vector<int> fill_array()
 {
   std::vector<int> array;
-  int element;
+  int element = 0;
   while (element != -999)
   {
     std::cin>> element;
     if (element != -999)
       array.push_back(element);
   }
-
   return array;
 }
 
-// merging two sorted arrays in increasing order
-void merge(std::vector<int>& arr, std::vector<int>& left, std::vector<int>& right)
+void insertion_sort_arr(std::vector<int>& arr)
 {
-  int iterate = 0, l = 0, r = 0;
-  std::cout << "size: " << left.size() + right.size() << '\n';
-  while (iterate < left.size() + right.size()) // while
+  for (int i = 1; i < arr.size(); ++i)
   {
-    if (l < left.size() && r < right.size()) // when neither one of the subarrays is
-    {                           // is completely looped through
-      if (left[l] < right[r])
-      {
-        arr[iterate] = left[l];
-        ++l; // increment Left array index
-      }
-      else
-      {
-        arr[iterate] = right[r];
-        ++r;
-      }
-    }
-    else if (l >= left.size()) // when L_arr[] is completely looped through
+    int j = i;
+    while (j > 0 && arr[j] < arr[j-1])
     {
-      arr[iterate] = right[r];
-      ++r;
+      int temp = arr[j-1];
+      arr[j-1] = arr[j];
+      arr[j]   = temp;
+      --j;
     }
-    else // when R_arr[] is completely looped through
-    {
-      arr[iterate] = left[l];
-      ++l;
-    }
-
-    ++iterate; // increment final array's index
   }
 }
-void merge_sort_arr(std::vector<int>& arr, int start, int end)
+
+void find_number(std::vector<int>& arr, int number)
 {
-  if (arr.size() < 2)
-    return;
+  int start = 0, end = arr.size() - 1;
+  while (start < end)
+  {
+    if (arr[start] + arr[end] == number)
+    {
+      std::cout << start << ' ' << end << '\n';
+      break;
+    }
+    else if (arr[start] + arr[end] > number)
+      --end; // move to the next element downward
 
-  int half = arr.size() / 2;
-  merge_sort_arr(arr, start, half);
-  merge_sort_arr(arr, half, end);
-  merge(arr, left, right);
+    else if (arr[start] + arr[end] < number)
+      ++start; // move to the next element upward
+  }
 
-  return;
+  // if (start >= end)
+  // {
+  //   std::cout << "number is not found\n";
+  //   return;  // exit program if element is not found
+  // }
 }
 
 int main(int argc, char const *argv[]) {
   std::vector<int> v;
-  int i, j, choice;
+  int choice;
   std::cin>> choice;
   switch (choice) {
     case 0:
-      v = fill_array();
-      break;
+    {
+      int number;
+      std::cin >> number;
+      v = fill_array(); // let user fill in array elements
+      insertion_sort_arr(v); // sort the array
+      find_number(v, number); // see if some of array elements == number
+    }break;
 
     case 1:
     {
-      int seed, size, lower, higher;
-      std::cin >> seed >> size >> lower >> higher;
+      int seed, size, lower, higher, number;
+      std::cin >> seed >> number >> size >> lower >> higher;
       srand(seed);
       for (int i = 0; i < size; i++)
-        v.push_back(rand() % higher + lower);
+        v.push_back(rand() % higher + lower); // fill in array with random ints
+        
+      insertion_sort_arr(v); // sort the array
+      find_number(v, number); // see if some of array elements == number
     }break;
 
     default: // exit program when wrong choice is made
@@ -94,9 +93,5 @@ int main(int argc, char const *argv[]) {
   }
 
   print_array(v); // print array content
-  merge_sort_arr(v); // sort array
-  //std::cout << sum << ' ' << start << ' ' << end << ' ';
-  std::cout << '\n';
-
   return 0;
 }
