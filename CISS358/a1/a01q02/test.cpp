@@ -1,6 +1,14 @@
 #include<iostream>
 #include<vector>
 
+void print_array(std::vector<int>& v)
+{
+  for (int i = 0; i < v.size(); ++i)
+    std::cout << v[i] << ' ';
+
+  std::cout << '\n';
+  return;
+}
 
 // std::vector<int>left, right;
 // for (int i = 0; i < half; ++i)
@@ -45,6 +53,7 @@ void merge(std::vector<int>& arr, std::vector<int> left, std::vector<int> right)
 
 void merge_sort(std::vector<int>& arr, int start, int end)
 {
+  //std::cout << arr.size() << ' ';
   if (start < end)
   {
     int middle = start + (end - start)/2;
@@ -55,21 +64,20 @@ void merge_sort(std::vector<int>& arr, int start, int end)
     for (int i = middle; i < end; ++i)
       right.push_back(arr[i]);
 
-    merge_sort(arr, start, middle);
-    merge_sort(arr, middle+1, end);
+    merge_sort(left, start, middle);
+    merge_sort(right, middle, end-1);
     merge(arr, left, right);
   }
   return;
 }
 
 int main(int argc, char const *argv[]) {
-  std::vector<int> v;
-  int i, j, choice;
   std::vector<int>s, q;
+  //s.push_back(15);
   s.push_back(5);
   s.push_back(-2);
   s.push_back(5);
-  s.push_back(7);
+  s.push_back(-7);
   s.push_back(11);
   s.push_back(33);
 
@@ -80,7 +88,6 @@ int main(int argc, char const *argv[]) {
   q.push_back(31);
 
   merge_sort(s, 0, 6);
-  std::cout << "here \n";
   print_array(s);
 
 return 0;

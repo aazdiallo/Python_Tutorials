@@ -83,7 +83,7 @@ int main(int argc, char const *argv[]) {
       srand(seed);
       for (int i = 0; i < size; i++)
         v.push_back(rand() % higher + lower); // fill in array with random ints
-        
+
       insertion_sort_arr(v); // sort the array
       find_number(v, number); // see if some of array elements == number
     }break;
